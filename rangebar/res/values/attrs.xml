@@ -21,6 +21,7 @@
         <attr name="connectingLineWeight" format="dimension" />
         <attr name="connectingLineColor" format="reference|color" />
         <attr name="pinRadius" format="dimension" />
+        <attr name="pinAlpha" format="float" />
     </declare-styleable>
 
 </resources>

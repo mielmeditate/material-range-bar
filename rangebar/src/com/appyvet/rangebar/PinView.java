@@ -93,6 +93,8 @@ class PinView extends View {
 
     private boolean mHasBeenPressed = false;
 
+    private Float mPinAlpha;
+
     // Constructors ////////////////////////////////////////////////////////////
 
     public PinView(Context context) {
@@ -120,7 +122,8 @@ class PinView extends View {
      * @param pinsAreTemporary  whether to show the pin initially or just the circle
      */
     public void init(Context ctx, float y, float pinRadiusDP, int pinColor, int textColor,
-            float circleRadius, int circleColor, float minFont, float maxFont, boolean pinsAreTemporary) {
+            float circleRadius, int circleColor, float minFont, float maxFont, boolean pinsAreTemporary,
+                     float pinAlpha) {
 
         mRes = ctx.getResources();
         mPin = ContextCompat.getDrawable(ctx, R.drawable.rotate);
@@ -171,6 +174,9 @@ class PinView extends View {
                 targetRadius,
                 mRes.getDisplayMetrics());
         mY = y;
+
+        mPinAlpha = pinAlpha;
+        mPin.setAlpha((int)(pinAlpha * 255));
     }
 
     /**

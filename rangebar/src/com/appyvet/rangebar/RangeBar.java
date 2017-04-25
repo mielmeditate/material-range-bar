@@ -82,6 +82,8 @@ public class RangeBar extends View {
 
     private static final int DEFAULT_TICK_COLOR = Color.BLACK;
 
+    private static final float DEFAULT_PIN_ALPHA = 1;
+
     // Corresponds to material indigo 500.
     private static final int DEFAULT_PIN_COLOR = 0xff3f51b5;
 
@@ -111,6 +113,8 @@ public class RangeBar extends View {
     private int mBarColor = DEFAULT_BAR_COLOR;
 
     private int mPinColor = DEFAULT_PIN_COLOR;
+
+    private float mPinAlpha = DEFAULT_PIN_ALPHA;
 
     private int mTextColor = DEFAULT_TEXT_COLOR;
 
@@ -349,12 +353,12 @@ public class RangeBar extends View {
             mLeftThumb = new PinView(ctx);
             mLeftThumb.setFormatter(mFormatter);
             mLeftThumb.init(ctx, yPos, expandedPinRadius, mPinColor, mTextColor, mCircleSize,
-                    mCircleColor, mMinPinFont, mMaxPinFont, mArePinsTemporary);
+                    mCircleColor, mMinPinFont, mMaxPinFont, mArePinsTemporary, mPinAlpha);
         }
         mRightThumb = new PinView(ctx);
         mRightThumb.setFormatter(mFormatter);
         mRightThumb.init(ctx, yPos, expandedPinRadius, mPinColor, mTextColor, mCircleSize,
-                mCircleColor, mMinPinFont, mMaxPinFont, mArePinsTemporary);
+                mCircleColor, mMinPinFont, mMaxPinFont, mArePinsTemporary, mPinAlpha);
 
         // Create the underlying bar.
         final float marginLeft = Math.max(mExpandedPinRadius, mCircleSize);
@@ -666,6 +670,15 @@ public class RangeBar extends View {
      */
     public void setPinColor(int pinColor) {
         mPinColor = pinColor;
+        createPins();
+    }
+
+    /**
+     * Set the alpha of the pins.
+     * @param pinAlpha Float specifying the alpha of the pin.
+     */
+    public void setPinAlpha(float pinAlpha) {
+        this.mPinAlpha = pinAlpha;
         createPins();
     }
 
@@ -998,10 +1011,11 @@ public class RangeBar extends View {
             mTickColor = mActiveTickColor;
         }
 
+        super.setEnabled(enabled);
+
         createBar();
         createPins();
         createConnectingLine();
-        super.setEnabled(enabled);
     }
 
     public void setPinTextFormatter(PinTextFormatter pinTextFormatter) {
@@ -1098,6 +1112,8 @@ public class RangeBar extends View {
                     DEFAULT_MAX_PIN_FONT_SP * density);
 
             mIsRangeBar = ta.getBoolean(R.styleable.RangeBar_rangeBar, true);
+
+            mPinAlpha = ta.getFloat(R.styleable.RangeBar_pinAlpha, DEFAULT_PIN_ALPHA);
         } finally {
             ta.recycle();
         }
@@ -1138,15 +1154,22 @@ public class RangeBar extends View {
         Context ctx = getContext();
         float yPos = getYPos();
 
+        float expandedPinRadius = 0.0f;
+        if(isEnabled()) {
+            expandedPinRadius = mExpandedPinRadius / getResources().getDisplayMetrics().density;
+        }
+
         if (mIsRangeBar) {
             mLeftThumb = new PinView(ctx);
-            mLeftThumb.init(ctx, yPos, 0, mPinColor, mTextColor, mCircleSize, mCircleColor,
-                    mMinPinFont, mMaxPinFont, false);
+            mLeftThumb.setFormatter(mFormatter);
+            mLeftThumb.init(ctx, yPos, expandedPinRadius, mPinColor, mTextColor, mCircleSize, mCircleColor,
+                    mMinPinFont, mMaxPinFont, mArePinsTemporary, mPinAlpha);
         }
         mRightThumb = new PinView(ctx);
+        mRightThumb.setFormatter(mFormatter);
         mRightThumb
-                .init(ctx, yPos, 0, mPinColor, mTextColor, mCircleSize, mCircleColor, mMinPinFont,
-                        mMaxPinFont, false);
+                .init(ctx, yPos, expandedPinRadius, mPinColor, mTextColor, mCircleSize, mCircleColor, mMinPinFont,
+                        mMaxPinFont, mArePinsTemporary, mPinAlpha);
 
         float marginLeft = getMarginLeft();
         float barLength = getBarLength();
